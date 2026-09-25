@@ -7,11 +7,6 @@ use App\Http\Controllers\ParkingSlotController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Public routes
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
     return view('home');
@@ -27,11 +22,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated user routes
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [BookingController::class, 'userDashboard'])->name('user.dashboard');
@@ -46,11 +36,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin routes (auth + admin middleware)
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');

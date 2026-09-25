@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Demo admin account.
         // IMPORTANT: change this password before any real deployment.
         User::create([
             'name' => 'Admin',
@@ -23,8 +22,6 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Admin@123'),
             'role' => 'admin',
         ]);
-
-        // Sample parking slots for demonstration.
         $slots = [
             ['slot_number' => 'A-01', 'location' => 'Ground Floor', 'vehicle_type' => 'Car', 'price' => 100.00, 'status' => 'Available'],
             ['slot_number' => 'A-02', 'location' => 'Ground Floor', 'vehicle_type' => 'Car', 'price' => 100.00, 'status' => 'Available'],

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('parking_slots', function (Blueprint $table) {
             $table->id();
-            $table->string('slot_number')->unique(); // e.g. A-01
-            $table->string('location');              // e.g. Ground Floor
-            $table->string('vehicle_type');           // Car / Bike / Both
+            $table->string('slot_number')->unique();
+            $table->string('location');
+            $table->string('vehicle_type');
             $table->enum('status', ['Available', 'Booked'])->default('Available');
             $table->decimal('price', 10, 2);
             $table->timestamps();

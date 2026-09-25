@@ -36,8 +36,6 @@ class BookingController extends Controller
      */
     public function showAvailableSlots()
     {
-        // Availability depends on the selected date and time, not a permanent
-        // Available/Booked flag on the slot.
         $slots = ParkingSlot::orderBy('slot_number')->paginate(9);
 
         return view('user.book-slot', compact('slots'));
@@ -57,7 +55,6 @@ class BookingController extends Controller
         ]);
 
         $unavailable = DB::transaction(function () use ($validated) {
-            // Serialize bookings for this slot to avoid simultaneous overlaps.
             $slot = ParkingSlot::whereKey($validated['parking_slot_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -122,7 +119,6 @@ class BookingController extends Controller
      */
     public function cancel(Booking $booking)
     {
-        // A user may only cancel their own booking.
         if ($booking->user_id !== Auth::id()) {
             abort(403);
         }
