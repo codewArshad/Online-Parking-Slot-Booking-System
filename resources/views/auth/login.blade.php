@@ -39,7 +39,7 @@
 
                 <hr>
                 <p class="text-muted small text-center mb-0">
-                    Demo admin login: admin@example.com / Admin@123
+                    Login Using Email & Password
                 </p>
             </div>
         </div>
