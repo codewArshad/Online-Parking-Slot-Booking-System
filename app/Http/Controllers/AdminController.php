@@ -13,15 +13,17 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
+        Booking::completeExpired();
+
         $totalSlots = ParkingSlot::count();
-        $availableSlots = ParkingSlot::where('status', 'Available')->count();
-        $bookedSlots = ParkingSlot::where('status', 'Booked')->count();
+        $bookedSlots = Booking::where('status', 'Booked')->count();
+        $completedBookings = Booking::where('status', 'Completed')->count();
         $totalBookings = Booking::count();
 
         return view('admin.dashboard', compact(
             'totalSlots',
-            'availableSlots',
             'bookedSlots',
+            'completedBookings',
             'totalBookings'
         ));
     }
@@ -31,6 +33,8 @@ class AdminController extends Controller
      */
     public function bookings(Request $request)
     {
+        Booking::completeExpired();
+
         $search = $request->query('search');
 
         $bookings = Booking::with(['user', 'parkingSlot'])

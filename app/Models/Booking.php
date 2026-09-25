@@ -17,7 +17,26 @@ class Booking extends Model
         'start_time',
         'end_time',
         'status',
+        'payment_method',
+        'payment_status',
+        'paid_amount',
     ];
+
+    /** Mark elapsed bookings complete and return how many records changed. */
+    public static function completeExpired(): int
+    {
+        $now = now();
+
+        return static::where('status', 'Booked')
+            ->where(function ($query) use ($now) {
+                $query->where('booking_date', '<', $now->toDateString())
+                    ->orWhere(function ($query) use ($now) {
+                        $query->where('booking_date', $now->toDateString())
+                            ->where('end_time', '<=', $now->format('H:i:s'));
+                    });
+            })
+            ->update(['status' => 'Completed', 'updated_at' => $now]);
+    }
 
     /**
      * A booking belongs to a user.

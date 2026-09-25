@@ -32,6 +32,7 @@
                         <th>Start</th>
                         <th>End</th>
                         <th>Status</th>
+                        <th>Payment</th>
                         <th>Created</th>
                     </tr>
                 </thead>
@@ -49,15 +50,18 @@
                             <td>
                                 @if($booking->status === 'Booked')
                                     <span class="badge bg-success">Booked</span>
+                                @elseif($booking->status === 'Completed')
+                                    <span class="badge bg-secondary">Completed</span>
                                 @else
                                     <span class="badge bg-secondary">Cancelled</span>
                                 @endif
                             </td>
+                            <td>{{ $booking->payment_status }}<br>₹{{ number_format($booking->paid_amount, 2) }}</td>
                             <td>{{ $booking->created_at->format('d M Y') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center text-muted py-4">
+                            <td colspan="11" class="text-center text-muted py-4">
                                 {{ $search ? 'No matching bookings found.' : 'No bookings found.' }}
                             </td>
                         </tr>

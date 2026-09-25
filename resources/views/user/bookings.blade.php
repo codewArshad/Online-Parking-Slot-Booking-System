@@ -17,6 +17,7 @@
                         <th>Start</th>
                         <th>End</th>
                         <th>Status</th>
+                        <th>Payment</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -32,10 +33,13 @@
                             <td>
                                 @if($booking->status === 'Booked')
                                     <span class="badge bg-success">Booked</span>
+                                @elseif($booking->status === 'Completed')
+                                    <span class="badge bg-secondary">Completed</span>
                                 @else
                                     <span class="badge bg-secondary">Cancelled</span>
                                 @endif
                             </td>
+                            <td>{{ $booking->payment_status }}<br>₹{{ number_format($booking->paid_amount, 2) }}</td>
                             <td>
                                 @if($booking->status === 'Booked')
                                     <form action="{{ route('bookings.cancel', $booking) }}" method="POST"
@@ -51,7 +55,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">No bookings found.</td>
+                            <td colspan="9" class="text-center text-muted py-4">No bookings found.</td>
                         </tr>
                     @endforelse
                 </tbody>

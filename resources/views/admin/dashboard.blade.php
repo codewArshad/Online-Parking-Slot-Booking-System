@@ -17,16 +17,16 @@
         <div class="col-md-3 col-sm-6">
             <div class="card text-center shadow-sm">
                 <div class="card-body">
-                    <h6 class="text-muted">Available</h6>
-                    <h3 class="text-success">{{ $availableSlots }}</h3>
+                    <h6 class="text-muted">Active Bookings</h6>
+                    <h3 class="text-warning">{{ $bookedSlots }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="card text-center shadow-sm">
                 <div class="card-body">
-                    <h6 class="text-muted">Booked</h6>
-                    <h3 class="text-warning">{{ $bookedSlots }}</h3>
+                    <h6 class="text-muted">Completed Bookings</h6>
+                    <h3 class="text-secondary">{{ $completedBookings }}</h3>
                 </div>
             </div>
         </div>
@@ -44,4 +44,5 @@
         <a href="{{ route('admin.slots.index') }}" class="btn btn-primary">Manage Slots</a>
         <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-secondary">View Bookings</a>
     </div>
+    <script>setTimeout(() => window.location.reload(), 60000);</script>
 @endsection

@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\ParkingSlot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -14,12 +15,20 @@ class BookingController extends Controller
      */
     public function userDashboard()
     {
-        $availableSlots = ParkingSlot::where('status', 'Available')->count();
+        Booking::completeExpired();
+
+        $availableSlots = ParkingSlot::count();
         $myActiveBookings = Booking::where('user_id', Auth::id())
             ->where('status', 'Booked')
             ->count();
+        $myTotalBookings = Booking::where('user_id', Auth::id())->count();
+        $myCompletedBookings = Booking::where('user_id', Auth::id())
+            ->where('status', 'Completed')
+            ->count();
 
-        return view('user.dashboard', compact('availableSlots', 'myActiveBookings'));
+        return view('user.dashboard', compact(
+            'availableSlots', 'myActiveBookings', 'myTotalBookings', 'myCompletedBookings'
+        ));
     }
 
     /**
@@ -27,7 +36,9 @@ class BookingController extends Controller
      */
     public function showAvailableSlots()
     {
-        $slots = ParkingSlot::where('status', 'Available')->paginate(9);
+        // Availability depends on the selected date and time, not a permanent
+        // Available/Booked flag on the slot.
+        $slots = ParkingSlot::orderBy('slot_number')->paginate(9);
 
         return view('user.book-slot', compact('slots'));
     }
@@ -40,30 +51,52 @@ class BookingController extends Controller
         $validated = $request->validate([
             'parking_slot_id' => 'required|exists:parking_slots,id',
             'vehicle_number' => 'required|string|max:20',
-            'booking_date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
+            'booking_date' => 'required|date|after_or_equal:today',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
-        $slot = ParkingSlot::findOrFail($validated['parking_slot_id']);
+        $unavailable = DB::transaction(function () use ($validated) {
+            // Serialize bookings for this slot to avoid simultaneous overlaps.
+            $slot = ParkingSlot::whereKey($validated['parking_slot_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        // Backend check - never trust that the slot is still available just
-        // because the user saw it as available a moment ago.
-        if ($slot->status !== 'Available') {
-            return back()->with('error', 'Sorry, this parking slot is no longer available.');
+            $overlap = Booking::where('parking_slot_id', $slot->id)
+                ->where('booking_date', $validated['booking_date'])
+                ->where('status', 'Booked')
+                ->where('start_time', '<', $validated['end_time'])
+                ->where('end_time', '>', $validated['start_time'])
+                ->exists();
+
+            if ($overlap) {
+                return true;
+            }
+
+            $startMinutes = ((int) substr($validated['start_time'], 0, 2) * 60)
+                + (int) substr($validated['start_time'], 3, 2);
+            $endMinutes = ((int) substr($validated['end_time'], 0, 2) * 60)
+                + (int) substr($validated['end_time'], 3, 2);
+            $estimatedAmount = round(($endMinutes - $startMinutes) / 60 * (float) $slot->price, 2);
+
+            Booking::create([
+                'user_id' => Auth::id(),
+                'parking_slot_id' => $slot->id,
+                'vehicle_number' => $validated['vehicle_number'],
+                'booking_date' => $validated['booking_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'status' => 'Booked',
+                'payment_status' => 'Paid',
+                'paid_amount' => $estimatedAmount,
+            ]);
+
+            return false;
+        });
+
+        if ($unavailable) {
+            return back()->withInput()->with('error', 'This slot is already booked for part of that time. Please choose another time.');
         }
-
-        Booking::create([
-            'user_id' => Auth::id(), // never trust a user_id from the request
-            'parking_slot_id' => $slot->id,
-            'vehicle_number' => $validated['vehicle_number'],
-            'booking_date' => $validated['booking_date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'status' => 'Booked',
-        ]);
-
-        $slot->update(['status' => 'Booked']);
 
         return redirect()->route('user.bookings')
             ->with('success', 'Parking slot booked successfully.');
@@ -74,6 +107,8 @@ class BookingController extends Controller
      */
     public function myBookings()
     {
+        Booking::completeExpired();
+
         $bookings = Booking::with('parkingSlot')
             ->where('user_id', Auth::id())
             ->latest()
@@ -97,7 +132,6 @@ class BookingController extends Controller
         }
 
         $booking->update(['status' => 'Cancelled']);
-        $booking->parkingSlot->update(['status' => 'Available']);
 
         return back()->with('success', 'Booking cancelled successfully.');
     }
