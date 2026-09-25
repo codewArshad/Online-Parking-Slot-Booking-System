@@ -13,7 +13,7 @@
                         <h5 class="card-title">{{ $slot->slot_number }}</h5>
                         <p class="mb-1"><strong>Location:</strong> {{ $slot->location }}</p>
                         <p class="mb-1"><strong>Vehicle Type:</strong> {{ $slot->vehicle_type }}</p>
-                        <p class="mb-2"><strong>Hourly rate:</strong> â‚¹{{ number_format($slot->price, 2) }}</p>
+                        <p class="mb-2"><strong>Hourly rate:</strong> &#8377;{{ number_format($slot->price, 2) }}</p>
                         <span class="badge bg-success mb-3">Available</span>
                         <div>
                             <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#bookModal{{ $slot->id }}">
@@ -55,7 +55,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Estimated payment</label>
                                     <div class="form-control bg-light" data-payment-estimate>Choose start and end times</div>
-                                    <small class="text-muted">Charged at â‚¹{{ number_format($slot->price, 2) }} per hour. Payment is simulated; no real charge is made.</small>
+                                    <small class="text-muted">Charged at &#8377;{{ number_format($slot->price, 2) }} per hour. Payment is simulated; no real charge is made.</small>
                                 </div>
                             </div>
 
@@ -99,7 +99,7 @@
                 }
 
                 const amount = rate * minutes / 60;
-                estimate.textContent = `${amount.toFixed(2)} (${(minutes / 60).toFixed(2)} hours)`;
+                estimate.textContent = `\u20B9${amount.toFixed(2)} (${(minutes / 60).toFixed(2)} hours)`;
             };
 
             start.addEventListener('input', updateEstimate);

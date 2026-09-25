@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Online Parking Slot Booking System')</title>
+    <title>@yield('title', 'ParkEase')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f6f9; }
@@ -15,7 +15,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">🅿️ Parking Booking</a>
+        <a class="navbar-brand" href="{{ route('home') }}">ParkEase</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -74,7 +74,7 @@
 </div>
 
 <footer class="mt-5">
-    &copy; {{ date('Y') }} Online Parking Slot Booking System — BCA College Project
+    &copy; {{ date('Y') }} ParkEase
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

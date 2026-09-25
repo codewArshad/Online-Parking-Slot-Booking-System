@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="p-5 mb-4 bg-white rounded-3 shadow-sm text-center">
-        <h1 class="display-6 fw-bold">Online Parking Slot Booking System</h1>
+        <h1 class="display-6 fw-bold">ParkEase</h1>
         <p class="fs-5 text-muted">Book your parking slot quickly and easily.</p>
 
         @guest
