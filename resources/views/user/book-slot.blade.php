@@ -99,7 +99,7 @@
                 }
 
                 const amount = rate * minutes / 60;
-                estimate.textContent = `â‚¹${amount.toFixed(2)} (${(minutes / 60).toFixed(2)} hours)`;
+                estimate.textContent = `${amount.toFixed(2)} (${(minutes / 60).toFixed(2)} hours)`;
             };
 
             start.addEventListener('input', updateEstimate);
